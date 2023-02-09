@@ -86,7 +86,9 @@ defmodule DockerizePhx do
   end
 
   defp docker_volume_exists?(volume_name) do
-    {_output, return_code} = System.cmd("docker", ~w[volume inspect #{volume_name}])
+    {_output, return_code} =
+      System.cmd("docker", ~w[volume inspect #{volume_name}], stderr_to_stdout: true)
+
     return_code == 0
   end
 
