@@ -15,38 +15,46 @@ defmodule DockerizePhx do
   require EEx
   require Hex
 
-  def write_dockerfile() do
-    app_name = app_name_string()
-    ex_version = System.version()
-    phx_version = phoenix_version()
+  def write_dockerfile(force) do
+    if File.exists?("Dockerfile") && !force do
+      IO.puts("Dockerfile already present. Use `mix dockerize_phx --force` to overwrite")
+    else
+      app_name = app_name_string()
+      ex_version = System.version()
+      phx_version = phoenix_version()
 
-    dockerfile_content =
-      EEx.eval_file(Path.join(template_dir(), "Dockerfile.eex"),
-        app_name: app_name,
-        ex_version: ex_version,
-        phx_version: phx_version
-      )
+      dockerfile_content =
+        EEx.eval_file(Path.join(template_dir(), "Dockerfile.eex"),
+          app_name: app_name,
+          ex_version: ex_version,
+          phx_version: phx_version
+        )
 
-    File.write("Dockerfile", dockerfile_content)
+      File.write("Dockerfile", dockerfile_content)
+    end
   end
 
-  def write_docker_compose() do
-    app_name = app_name_string()
-    data_volume_name = app_name <> "-data"
+  def write_docker_compose(force) do
+    if File.exists?("docker-compose.yaml") && !force do
+      IO.puts("docker-compose.yaml already present. Use `mix dockerize_phx --force` to overwrite")
+    else
+      app_name = app_name_string()
+      data_volume_name = app_name <> "-data"
 
-    docker_compose_yaml =
-      EEx.eval_file(Path.join(template_dir(), "docker-compose.yaml.eex"),
-        app_name: app_name,
-        data_volume: data_volume_name
-      )
+      docker_compose_yaml =
+        EEx.eval_file(Path.join(template_dir(), "docker-compose.yaml.eex"),
+          app_name: app_name,
+          data_volume: data_volume_name
+        )
 
-    File.write("docker-compose.yaml", docker_compose_yaml)
+      File.write("docker-compose.yaml", docker_compose_yaml)
+    end
   end
 
   def create_db_data_volume() do
     if !docker_volume_exists?(app_name_string()) do
       {output, return_code} =
-        System.cmd("docker", ~w[volume create --name #{app_name_string()} -d local])
+        System.cmd("docker", ~w[volume create --name #{app_name_string()}-data -d local])
 
       if return_code != 0 do
         IO.puts("Docker volume creation failed: #{output}")
@@ -54,6 +62,8 @@ defmodule DockerizePhx do
     end
   end
 
+  # We try and get whatever Phoenix version exists in the app directory, then
+  # fall back to just grabbing the latest stable from Hex
   defp phoenix_version do
     cond do
       !!local_phx_version() -> local_phx_version()
@@ -77,6 +87,7 @@ defmodule DockerizePhx do
     end
   end
 
+  # Returns nil if we can't find a Phoenix dependency in this app
   defp local_phx_version do
     !!Application.spec(:phoenix, :vsn)
   end
@@ -93,6 +104,17 @@ defmodule DockerizePhx do
   end
 
   defp template_dir do
+    if File.exists?("priv/templates/Dockerfile.eex") do
+      local_template_dir()
+    else
+      archive_template_dir()
+    end
+  end
+
+  # Needed when developing and not using the installed archive
+  defp local_template_dir, do: Path.join(["priv", "templates"])
+
+  defp archive_template_dir do
     [dockerize_phx_latest | _tail] =
       Mix.path_for(:archives) |> Path.join("dockerize_phx*") |> Path.wildcard() |> Enum.sort()
 
