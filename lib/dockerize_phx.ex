@@ -35,7 +35,7 @@ defmodule DockerizePhx do
     data_volume_name = app_name <> "-data"
 
     docker_compose_yaml =
-      EEx.eval_file("priv/templates/docker-compose.yaml.eex"),
+      EEx.eval_file("priv/templates/docker-compose.yaml.eex",
         app_name: app_name,
         data_volume: data_volume_name
       )
