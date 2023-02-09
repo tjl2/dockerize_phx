@@ -13,7 +13,7 @@ defmodule Mix.Tasks.DockerizePhx do
     DockerizePhx.write_dockerfile(force)
     DockerizePhx.write_docker_compose(force)
     DockerizePhx.create_db_data_volume()
-    # DockerzePhx.modify_listen_ip_config
+    DockerizePhx.modify_http_listen_ip()
     # DockerizePhx.modify_dev_db_config
     # IO.puts("Dockerized this app! You should now be able to run `docker compose up`")
   end

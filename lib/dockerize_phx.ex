@@ -15,6 +15,8 @@ defmodule DockerizePhx do
   require EEx
   require Hex
 
+  @dev_config "config/dev.exs"
+
   def write_dockerfile(force) do
     if File.exists?("Dockerfile") && !force do
       IO.puts("Dockerfile already present. Use `mix dockerize_phx --force` to overwrite")
@@ -61,6 +63,17 @@ defmodule DockerizePhx do
       if return_code != 0 do
         IO.puts("Docker volume creation failed: #{output}")
       end
+    end
+  end
+
+  def modify_http_listen_ip do
+    if File.exists?(@dev_config) do
+      {:ok, config} = File.read(@dev_config)
+
+      new_config =
+        Regex.replace(~r/http\: \[ip\: \{.*, .*, .*, .*\}/, config, "http: [ip: {0, 0, 0, 0}")
+
+      File.write(@dev_config, new_config)
     end
   end
 
