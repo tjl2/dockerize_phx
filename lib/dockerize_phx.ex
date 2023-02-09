@@ -20,7 +20,7 @@ defmodule DockerizePhx do
   @db_params ~S"""
   username: "postgres",
     password: "postgres",
-    hostname: "db",
+    hostname: "db",\
   """
 
   def write_dockerfile(force) do
