@@ -17,11 +17,9 @@ defmodule DockerizePhx do
 
   @dev_config "config/dev.exs"
   @db_params_regex ~r/username:[[:blank:]]+".*",\n.*password:[[:blank:]]+".*",\n.*hostname:[[:blank:]]+".*",/
-  @db_params ~S"""
-  username: "postgres",
+  @db_params ~S(username: "postgres",
     password: "postgres",
-    hostname: "db",\
-  """
+    hostname: "db",)
 
   def write_dockerfile(force) do
     if File.exists?("Dockerfile") && !force do
