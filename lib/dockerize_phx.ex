@@ -16,6 +16,12 @@ defmodule DockerizePhx do
   require Hex
 
   @dev_config "config/dev.exs"
+  @db_params_regex ~r/username:[[:blank:]]+".*",\n.*password:[[:blank:]]+".*",\n.*hostname:[[:blank:]]+".*",/
+  @db_params """
+  username: "postgres",
+  password: "postgres",
+  hostname: "db",
+  """
 
   def write_dockerfile(force) do
     if File.exists?("Dockerfile") && !force do
@@ -72,6 +78,16 @@ defmodule DockerizePhx do
 
       new_config =
         Regex.replace(~r/http\: \[ip\: \{.*, .*, .*, .*\}/, config, "http: [ip: {0, 0, 0, 0}")
+
+      File.write(@dev_config, new_config)
+    end
+  end
+
+  def modify_dev_db_config do
+    if File.exists?(@dev_config) do
+      {:ok, config} = File.read(@dev_config)
+
+      new_config = Regex.replace(@db_params_regex, config, @db_params)
 
       File.write(@dev_config, new_config)
     end
