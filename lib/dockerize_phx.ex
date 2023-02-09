@@ -52,9 +52,11 @@ defmodule DockerizePhx do
   end
 
   def create_db_data_volume() do
-    if !docker_volume_exists?(app_name_string()) do
+    volume_name = app_name_string() <> "-data"
+
+    if !docker_volume_exists?(volume_name) do
       {output, return_code} =
-        System.cmd("docker", ~w[volume create --name #{app_name_string()}-data -d local])
+        System.cmd("docker", ~w[volume create --name #{volume_name} -d local])
 
       if return_code != 0 do
         IO.puts("Docker volume creation failed: #{output}")
