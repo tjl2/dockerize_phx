@@ -2,6 +2,7 @@ defmodule Mix.Tasks.DockerizePhx do
   @moduledoc """
   Set up a Phoenix app for local development with Docker Compose.
   """
+  alias DockerizePhx.MixProject
 
   @shortdoc "Configure Docker Compose setup for local Phoenix dev"
 

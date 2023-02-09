@@ -18,7 +18,7 @@ defmodule DockerizePhx.MixProject do
     ]
   end
 
-  def version, do: "0.1.0"
+  def version, do: "0.1.1"
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do

@@ -21,7 +21,7 @@ defmodule DockerizePhx do
     phx_version = phoenix_version()
 
     dockerfile_content =
-      EEx.eval_file("lib/templates/Dockerfile.eex",
+      EEx.eval_file("priv/templates/Dockerfile.eex",
         app_name: app_name,
         ex_version: ex_version,
         phx_version: phx_version
@@ -35,7 +35,7 @@ defmodule DockerizePhx do
     data_volume_name = app_name <> "-data"
 
     docker_compose_yaml =
-      EEx.eval_file("lib/templates/docker-compose.yaml.eex",
+      EEx.eval_file("priv/templates/docker-compose.yaml.eex"),
         app_name: app_name,
         data_volume: data_volume_name
       )
@@ -89,4 +89,11 @@ defmodule DockerizePhx do
     {_output, return_code} = System.cmd("docker", ~w[volume inspect #{volume_name}])
     return_code == 0
   end
+
+  # defp template_dir do
+  #   [dockerize_phx_latest | _tail] =
+  #     Mix.path_for(:archives) |> Path.join("dockerize_phx*") |> Path.wildcard() |> Enum.sort()
+
+  #   dockerize_phx_latest
+  # end
 end
