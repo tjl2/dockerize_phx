@@ -4,18 +4,29 @@
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `dockerize_phx` to your list of dependencies in `mix.exs`:
+* Create a new Phoenix project
+* Then
+  ```
+  mix archive.install github tjl2/dockerize_phx
+  mix dockerize_phx
+  ```
+* Create the DB
+  ```
+  docker-compose run web mix ecto.create
+  ```
+* Run the app
+  ```
+  docker-compose up
+  ```
 
-```elixir
-def deps do
-  [
-    {:dockerize_phx, "~> 0.1.0"}
-  ]
-end
+From now on, whenever you need to run any `mix` commands, or `iex` sessions, you can do so from within the container:
+
+```
+docker compose exec web <your command>
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/dockerize_phx>.
+I personally have an alias for just starting a shell in the container:
 
+```
+alias dcew='docker-compose exec web'
+```
