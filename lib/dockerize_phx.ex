@@ -1,17 +1,9 @@
 defmodule DockerizePhx do
   @moduledoc """
-  Documentation for `DockerizePhx`.
+  `DockerizePhx` library for use with the dockerize_phx mix task.
+  https://github.com/tjl2/dockerize_phx
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> DockerizePhx.hello()
-      :world
-
-  """
   require EEx
   require Hex
 
