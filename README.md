@@ -6,6 +6,8 @@ Once you have run the mix task, you can run the app with `docker-compose up` and
 
 ## Caveats
 
+When writing versions to the Dockerfile, we match whatever the currently installed Elixir version is. For the Phoenix version, we use whatever the version is in the current `Application`, or fall back to just grabbing the latest version from hex.pm.
+
 The alterations to the `dev.exs` file are fairly brittle regex replacements. If you have modified the structure of the config before running the mix task, it may not work as expected.
 
 ## Installation
