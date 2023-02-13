@@ -17,7 +17,7 @@ The alterations to the `dev.exs` file are fairly brittle regex replacements. If 
   mix archive.install github tjl2/dockerize_phx
   mix dockerize_phx
 
- ```
+  ```
 
 * Create the DB, from inside the web container
   
