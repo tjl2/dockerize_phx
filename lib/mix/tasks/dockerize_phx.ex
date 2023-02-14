@@ -14,6 +14,6 @@ defmodule Mix.Tasks.DockerizePhx do
     DockerizePhx.write_docker_compose(force)
     DockerizePhx.create_db_data_volume()
     DockerizePhx.modify_http_listen_ip()
-    DockerizePhx.modify_dev_db_config()
+    DockerizePhx.modify_db_configs()
   end
 end
