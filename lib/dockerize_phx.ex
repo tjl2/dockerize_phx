@@ -7,7 +7,7 @@ defmodule DockerizePhx do
   require EEx
   require Hex
 
-  @dev_config "config/dev.exs"
+  @config_files %{dev: "config/dev.exs", test: "config/test.exs"}
   @db_params_regex ~r/username:[[:blank:]]+".*",\n.*password:[[:blank:]]+".*",\n.*hostname:[[:blank:]]+".*",/
   @db_params ~S(username: "postgres",
   password: "postgres",
@@ -63,24 +63,26 @@ defmodule DockerizePhx do
   end
 
   def modify_http_listen_ip do
-    if File.exists?(@dev_config) do
-      {:ok, config} = File.read(@dev_config)
+    if File.exists?(@config_files[:dev]) do
+      {:ok, config} = File.read(@config_files[:dev])
 
       new_config =
         Regex.replace(~r/http\: \[ip\: \{.*, .*, .*, .*\}/, config, "http: [ip: {0, 0, 0, 0}")
 
-      File.write(@dev_config, new_config)
+      File.write(@config_files[:dev], new_config)
     end
   end
 
-  def modify_dev_db_config do
-    if File.exists?(@dev_config) do
-      {:ok, config} = File.read(@dev_config)
+  def modify_db_configs do
+    Enum.each(@config_files, fn {_env, config_file} ->
+      if File.exists?(config_file) do
+        {:ok, config} = File.read(config_file)
 
-      new_config = Regex.replace(@db_params_regex, config, @db_params)
+        new_config = Regex.replace(@db_params_regex, config, @db_params)
 
-      File.write(@dev_config, new_config)
-    end
+        File.write(config_file, new_config)
+      end
+    end)
   end
 
   # We try and get whatever Phoenix version exists in the app directory, then
